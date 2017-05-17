@@ -25,13 +25,20 @@ import time
 from keras.models import model_from_json
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array
 
+from geometry_msgs.msg import Twist
+
+
+
 model = None
 
 class RosTensorFlow():
     def __init__(self):
         self._cv_bridge = CvBridge()
         self._sub = rospy.Subscriber('image', Image, self.callback, queue_size=1)
-        self._pub = rospy.Publisher('steering_angle', Int16, queue_size=1)
+
+        self._pub = rospy.Publisher('cmd_vel', Twist, queue_size = 1)
+
+        #self._pub = rospy.Publisher('steering_angle', Int16, queue_size=1)
 
 
 
@@ -54,7 +61,14 @@ class RosTensorFlow():
 
         print(steering_angle)
         #rospy.loginfo('%d' % steering_angle)
-        self._pub.publish(steering_angle)
+
+
+                        twist = Twist()
+                        twist.linear.x = x*speed; twist.linear.y = y*speed; twist.linear.z = z*speed;
+                        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = steering_angle
+
+
+        self._pub.publish(twist)
 
 
 
