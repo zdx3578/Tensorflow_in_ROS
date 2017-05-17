@@ -19,7 +19,7 @@ import base64
 import json
 from PIL import Image as Image2
 from PIL import ImageOps
-from flask import Flask, render_template
+#from flask import Flask, render_template
 from io import BytesIO
 import time
 from keras.models import model_from_json
@@ -36,7 +36,7 @@ class RosTensorFlow():
         self._cv_bridge = CvBridge()
         self._sub = rospy.Subscriber('image', Image, self.callback, queue_size=1)
 
-        self._pub = rospy.Publisher('cmd_vel', Twist, queue_size = 1)
+        self._pub = rospy.Publisher('/twist_mux/cmd_vel', Twist, queue_size = 1)
 
         #self._pub = rospy.Publisher('steering_angle', Int16, queue_size=1)
 
@@ -63,10 +63,9 @@ class RosTensorFlow():
         #rospy.loginfo('%d' % steering_angle)
 
 
-                        twist = Twist()
-                        twist.linear.x = x*speed; twist.linear.y = y*speed; twist.linear.z = z*speed;
-                        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = steering_angle
-
+        twist = Twist()
+        twist.linear.x = 0.1; twist.linear.y =0; twist.linear.z = 0;
+        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = steering_angle*5
 
         self._pub.publish(twist)
 
